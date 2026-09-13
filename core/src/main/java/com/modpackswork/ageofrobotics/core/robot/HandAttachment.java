@@ -12,7 +12,12 @@ public sealed interface HandAttachment permits ToolHead, WeaponHead {
 
   /** Stats a tool-head may declare. */
   Set<RobotStat> TOOL_STATS =
-      Set.of(RobotStat.WORK_SPEED, RobotStat.AREA_OF_EFFECT, RobotStat.TOOL_DURABILITY);
+      Set.of(
+          RobotStat.WORK_SPEED,
+          RobotStat.AREA_OF_EFFECT,
+          RobotStat.TOOL_DURABILITY,
+          RobotStat.HARVEST_YIELD_BONUS,
+          RobotStat.PRECISION_HARVEST);
 
   /** Stats a weapon-head may declare. */
   Set<RobotStat> WEAPON_STATS =

@@ -125,6 +125,35 @@ class RobotPartTest {
   }
 
   @Test
+  void aHandsUpgradeBoostsWorkRatesButCannotBuyATierGatedCapability() {
+    final ToolHead pickaxe = PartCatalog.toolHead(ToolHeadType.PICKAXE);
+    final CarbonFiberUpgrade allowed =
+        CarbonFiberUpgrade.of(
+            StatBlock.builder()
+                .set(RobotStat.WORK_SPEED, 1.0)
+                .set(RobotStat.TOOL_DURABILITY, 100.0)
+                .build());
+
+    final HandsPart upgraded = new HandsPart(RobotTier.T1, pickaxe, allowed);
+    assertEquals(
+        pickaxe.stats().get(RobotStat.WORK_SPEED) + 1.0,
+        upgraded.effectiveStats().get(RobotStat.WORK_SPEED),
+        EPSILON);
+
+    for (final RobotStat gated :
+        new RobotStat[] {
+          RobotStat.AREA_OF_EFFECT, RobotStat.HARVEST_YIELD_BONUS, RobotStat.PRECISION_HARVEST
+        }) {
+      final CarbonFiberUpgrade forSale =
+          CarbonFiberUpgrade.of(StatBlock.builder().set(gated, 1.0).build());
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> new HandsPart(RobotTier.T1, pickaxe, forSale),
+          gated + " is gated by tier and must not be purchasable with an upgrade");
+    }
+  }
+
+  @Test
   void aToolHeadCannotDeclareCombatStats() {
     final StatBlock combatStats = StatBlock.builder().set(RobotStat.ATTACK_DAMAGE, 5.0).build();
 
