@@ -4,6 +4,10 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Test-only: the structural guards parse the mod's resource pack and data pack JSON rather
+    // than string-matching it, so a malformed file fails the build instead of failing in game.
+    testImplementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {
