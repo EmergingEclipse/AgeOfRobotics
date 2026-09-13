@@ -1,1 +1,2 @@
+sh "$(dirname "$0")/check-no-env-or-large-files.sh" || exit 1
 npx lint-staged

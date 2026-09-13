@@ -1,0 +1,19 @@
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo "pre-push: direct push to '$branch' is blocked. Open a PR from a feature branch instead." >&2
+  exit 1
+fi
+
+banned=$(cat "$(dirname "$0")/banned-terms.txt")
+lower_branch=$(printf '%s' "$branch" | tr '[:upper:]' '[:lower:]')
+for term in $banned; do
+  case "$lower_branch" in
+    *"$term"*)
+      echo "pre-push: branch name '$branch' mentions '$term'." >&2
+      echo "Rename the branch to something that doesn't reference AI tools or sessions:" >&2
+      echo "  git branch -m <new-name>" >&2
+      exit 1
+      ;;
+  esac
+done

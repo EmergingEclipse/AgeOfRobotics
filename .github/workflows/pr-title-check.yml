@@ -1,0 +1,23 @@
+name: PR title check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject banned terms in PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          banned="claude anthropic sonnet opus haiku copilot chatgpt session"
+          lower_title=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]')
+          for term in $banned; do
+            if echo "$lower_title" | grep -q "$term"; then
+              echo "PR title mentions '$term': $PR_TITLE"
+              echo "Rename the PR to remove any reference to AI tools or sessions."
+              exit 1
+            fi
+          done
