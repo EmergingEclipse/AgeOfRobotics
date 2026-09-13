@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "ageofrobotics:scrap_block",
+    "ageofrobotics:compacted_scrap"
+  ]
+}
