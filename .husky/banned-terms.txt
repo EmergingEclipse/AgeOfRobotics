@@ -1,0 +1,8 @@
+claude
+anthropic
+sonnet
+opus
+haiku
+copilot
+chatgpt
+session

@@ -1,0 +1,7 @@
+msg_file="$1"
+
+if grep -Eiq '^(Co-Authored-By|Signed-off-by):.*(claude|anthropic)' "$msg_file"; then
+  echo "commit-msg: Claude/Anthropic attribution trailers are not allowed in this repo." >&2
+  echo "Remove the offending line and try again." >&2
+  exit 1
+fi
