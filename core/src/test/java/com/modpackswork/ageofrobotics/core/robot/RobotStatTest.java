@@ -1,0 +1,74 @@
+package com.modpackswork.ageofrobotics.core.robot;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+
+/** The stat vocabulary itself: every slot contributes something, and ownership is consistent. */
+class RobotStatTest {
+
+  @Test
+  void everySlotOwnsAtLeastOneStat() {
+    for (final PartSlot slot : PartSlot.values()) {
+      assertFalse(slot.stats().isEmpty(), slot + " must contribute at least one stat field");
+    }
+  }
+
+  @Test
+  void slotStatsAgreeWithStatOwnership() {
+    for (final PartSlot slot : PartSlot.values()) {
+      final Set<RobotStat> ownedByStat =
+          Arrays.stream(RobotStat.values())
+              .filter(stat -> stat.owner().orElse(null) == slot)
+              .collect(Collectors.toCollection(() -> EnumSet.noneOf(RobotStat.class)));
+      assertEquals(ownedByStat, slot.stats(), "slot/stat ownership disagrees for " + slot);
+    }
+  }
+
+  @Test
+  void workRangeIsTheOnlyWholeRobotDerivedStat() {
+    final Set<RobotStat> derived =
+        Arrays.stream(RobotStat.values())
+            .filter(RobotStat::derived)
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(RobotStat.class)));
+    assertEquals(EnumSet.of(RobotStat.WORK_RANGE), derived);
+  }
+
+  @Test
+  void capabilityStatsUseBestOfAggregationRatherThanSum() {
+    assertEquals(Aggregation.BEST, RobotStat.TERRAIN_TRAVERSAL.aggregation());
+    assertEquals(Aggregation.BEST, RobotStat.SPECIAL_TRAVERSAL.aggregation());
+    assertEquals(Aggregation.SUM, RobotStat.MAX_HP.aggregation());
+  }
+
+  @Test
+  void flagAndModifierStatsDoNotScaleWithTier() {
+    assertFalse(RobotStat.SPECIAL_TRAVERSAL.scalesWithTier(), "a traversal flag has no magnitude");
+    assertFalse(
+        RobotStat.ROGUE_RISK_MODIFIER.scalesWithTier(),
+        "rogue risk comes from the personality chip, not the part's tier");
+    assertTrue(RobotStat.MAX_HP.scalesWithTier());
+    assertTrue(RobotStat.INTELLIGENCE.scalesWithTier());
+  }
+
+  @Test
+  void tiersRunFromCopperToTitaniumInAscendingOrder() {
+    assertEquals(6, RobotTier.values().length);
+    assertEquals("Copper", RobotTier.T1.material());
+    assertEquals("Titanium", RobotTier.T6.material());
+    for (int i = 1; i < RobotTier.values().length; i++) {
+      final RobotTier lower = RobotTier.values()[i - 1];
+      final RobotTier higher = RobotTier.values()[i];
+      assertEquals(lower.level() + 1, higher.level());
+      assertTrue(
+          higher.magnitudeMultiplier() > lower.magnitudeMultiplier(),
+          higher + " must out-scale " + lower);
+    }
+  }
+}
