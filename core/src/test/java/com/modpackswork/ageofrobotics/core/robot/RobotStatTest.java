@@ -71,4 +71,31 @@ class RobotStatTest {
           higher + " must out-scale " + lower);
     }
   }
+
+  @Test
+  void toolHeadsMayDeclareWorkAreaDurabilityAndTheTwoHarvestAbilities() {
+    assertEquals(
+        EnumSet.of(
+            RobotStat.WORK_SPEED,
+            RobotStat.AREA_OF_EFFECT,
+            RobotStat.TOOL_DURABILITY,
+            RobotStat.HARVEST_YIELD_BONUS,
+            RobotStat.PRECISION_HARVEST),
+        EnumSet.copyOf(HandAttachment.TOOL_STATS),
+        "a tool-head needs somewhere to record its tier-gated harvest abilities (issue #48)");
+  }
+
+  @Test
+  void handWorkCapabilitiesStepPerTierInsteadOfScalingSmoothly() {
+    assertFalse(
+        RobotStat.AREA_OF_EFFECT.scalesWithTier(),
+        "an area of effect is a block count, and 1.6 blocks is not a shape");
+    assertFalse(RobotStat.HARVEST_YIELD_BONUS.scalesWithTier(), "a yield bonus is tier-gated");
+    assertFalse(RobotStat.PRECISION_HARVEST.scalesWithTier(), "precision harvest is a flag");
+
+    assertEquals(PartSlot.HANDS, RobotStat.HARVEST_YIELD_BONUS.owner().orElseThrow());
+    assertEquals(PartSlot.HANDS, RobotStat.PRECISION_HARVEST.owner().orElseThrow());
+    assertEquals(Aggregation.BEST, RobotStat.HARVEST_YIELD_BONUS.aggregation());
+    assertEquals(Aggregation.BEST, RobotStat.PRECISION_HARVEST.aggregation());
+  }
 }

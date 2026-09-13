@@ -34,10 +34,24 @@ public enum RobotStat {
 
   /** Tool-head work speed. */
   WORK_SPEED(PartSlot.HANDS, Aggregation.SUM, true),
-  /** Tool-head area of effect, in blocks. */
-  AREA_OF_EFFECT(PartSlot.HANDS, Aggregation.BEST, true),
+  /**
+   * Tool-head area of effect: how many blocks one work action covers. A discrete block count that
+   * steps at gated tiers rather than a magnitude that scales smoothly, because 1.6 blocks is not a
+   * shape (§4.3, tool-head spec).
+   */
+  AREA_OF_EFFECT(PartSlot.HANDS, Aggregation.BEST, false),
   /** Uses before the equipped head wears out. */
   TOOL_DURABILITY(PartSlot.HANDS, Aggregation.SUM, true),
+  /**
+   * Expected additional drops per harvested block, the fortune equivalent. Tier-gated near the top
+   * of the ladder, so it is a step rather than a scaling magnitude.
+   */
+  HARVEST_YIELD_BONUS(PartSlot.HANDS, Aggregation.BEST, false),
+  /**
+   * Flag for the silk-touch equivalent: the head recovers the block itself instead of its normal
+   * drops. Mutually exclusive with {@link #HARVEST_YIELD_BONUS} on any one break.
+   */
+  PRECISION_HARVEST(PartSlot.HANDS, Aggregation.BEST, false),
   /** Weapon-head damage per hit. */
   ATTACK_DAMAGE(PartSlot.HANDS, Aggregation.SUM, true),
   /** Weapon-head attacks per second. */
