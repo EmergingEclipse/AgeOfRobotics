@@ -3,9 +3,52 @@ trigger:
     include:
       - main
 
+pr:
+  branches:
+    include:
+      - main
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
+
+variables:
+  JAVA_VERSION: "21"
 
 steps:
-  - script: echo "Placeholder pipeline - fill in real build steps once mod source exists."
-    displayName: 'Placeholder step'
+  - task: JavaToolInstaller@0
+    displayName: "Install JDK $(JAVA_VERSION)"
+    inputs:
+      versionSpec: "$(JAVA_VERSION)"
+      jdkArchitectureOption: "x64"
+      jdkSourceOption: "PreInstalled"
+
+  - task: Cache@2
+    displayName: "Cache Gradle + NeoForm artifacts"
+    inputs:
+      key: 'gradle | "$(Agent.OS)" | **/gradle.properties, **/*.gradle, gradle/wrapper/gradle-wrapper.properties'
+      restoreKeys: |
+        gradle | "$(Agent.OS)"
+        gradle
+      path: $(HOME)/.gradle/caches
+
+  - script: chmod +x ./gradlew
+    displayName: "Make the Gradle wrapper executable"
+
+  - script: ./gradlew :core:test --console=plain --stacktrace
+    displayName: "Unit tests (core, no Minecraft required)"
+
+  - script: ./gradlew build --console=plain --stacktrace
+    displayName: "Build the mod jar"
+
+  - task: PublishTestResults@2
+    displayName: "Publish test results"
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: "JUnit"
+      testResultsFiles: "**/build/test-results/test/TEST-*.xml"
+      failTaskOnFailedTests: true
+
+  - publish: mod/build/libs
+    displayName: "Publish mod jar"
+    artifact: ageofrobotics-jar
+    condition: succeeded()

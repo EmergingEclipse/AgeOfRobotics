@@ -1,0 +1,42 @@
+plugins {
+    id 'net.neoforged.moddev' version '2.0.147'
+}
+
+description = 'NeoForge mod for Minecraft ' + project.minecraftVersion + '.'
+
+// Ship the jar under the mod id rather than the Gradle subproject name.
+base {
+    archivesName = project.modId
+}
+
+neoForge {
+    version = project.neoForgeVersion
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        data {
+            clientData()
+        }
+    }
+
+    mods {
+        "$modId" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    implementation project(':core')
+}
+
+// The core module is plain Java with no Minecraft dependency, so it is folded into the mod jar
+// rather than shipped as a separate artifact players would have to install.
+tasks.named('jar') {
+    from project(':core').sourceSets.main.output
+}

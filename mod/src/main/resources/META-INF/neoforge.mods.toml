@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "All Rights Reserved"
+issueTrackerURL = "https://github.com/EmergingEclipse/AgeOfRobotics/issues"
+
+[[mods]]
+modId = "ageofrobotics"
+version = "0.0.1"
+displayName = "Age of Robotics"
+authors = "EmergingEclipse"
+description = '''
+Build a portal to a wrecked machine world, power a base, and assemble modular robots that work for you.
+'''
+
+[[dependencies.ageofrobotics]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.250,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.ageofrobotics]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
