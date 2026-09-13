@@ -1,3 +1,5 @@
 {
-  "itemGroup.ageofrobotics": "Age of Robotics"
+  "itemGroup.ageofrobotics": "Age of Robotics",
+  "block.ageofrobotics.scrap_block": "Scrap Block",
+  "block.ageofrobotics.compacted_scrap": "Compacted Scrap"
 }
