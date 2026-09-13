@@ -1,0 +1,11 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - script: echo "Placeholder pipeline - fill in real build steps once mod source exists."
+    displayName: 'Placeholder step'
