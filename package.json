@@ -1,0 +1,31 @@
+{
+  "name": "modpackswork",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Linting and git hooks for ModPacksWork",
+  "scripts": {
+    "prepare": "husky",
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "lint:yaml": "prettier --check \"**/*.{yml,yaml}\"",
+    "lint:java": "gradlew spotlessJavaCheck checkstyleMain",
+    "lint": "npm run lint:md && npm run lint:yaml"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "markdownlint-cli2": "^0.23.2",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "*.md": [
+      "markdownlint-cli2",
+      "prettier --check"
+    ],
+    "*.{yml,yaml}": [
+      "prettier --check"
+    ],
+    "*.java": [
+      "bash -c 'if [ -f ./gradlew ]; then ./gradlew spotlessJavaCheck checkstyleMain --console=plain; fi'"
+    ]
+  }
+}
