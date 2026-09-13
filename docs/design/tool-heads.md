@@ -199,16 +199,18 @@ netherite. Against the arms parts the framework currently builds, that gives:
 | Arms tier | STRENGTH | Harvest ceiling | What that unlocks                            |
 | --------- | -------- | --------------- | -------------------------------------------- |
 | T1        | 3.0      | stone           | Stone, coal, copper, most building blocks    |
-| T2        | 4.8      | iron            | Iron, lapis, quartz, the T3 material chain   |
+| T2        | 4.8      | iron            | Iron, lapis, redstone, quartz, gold          |
 | T3        | 6.6      | iron            | Same classes worked faster, not more classes |
-| T4        | 8.4      | diamond         | Diamond, emerald, redstone, obsidian         |
+| T4        | 8.4      | diamond         | Diamond, emerald, obsidian, ancient debris   |
 | T5        | 10.2     | diamond         | Same classes worked faster, not more classes |
-| T6        | 12.0     | netherite       | Ancient debris and everything below it       |
+| T6        | 12.0     | netherite       | Headroom above vanilla, for modded blocks    |
 
 The `STRENGTH` column is the value of `PartCatalog.defaultPart(PartSlot.ARMS, tier)` today, and the
 spec test asserts it, so retuning arms in issue #17 fails the build until this table is updated with
 it. The ceiling widens on the even tiers only, which is deliberate: the odd tiers are speed and
 durability tiers, so every tier is still worth crafting without the class ladder moving every step.
+Nothing in vanilla asks for more than the diamond class, so the netherite step at T6 is headroom for
+modded blocks rather than a gate the base game notices.
 
 A robot asked to work a block above its ceiling skips the block and reports it, in the same way a
 worn head stops the job. It never grinds forever on something it cannot break.
