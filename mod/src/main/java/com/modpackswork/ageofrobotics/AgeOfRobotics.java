@@ -1,5 +1,6 @@
 package com.modpackswork.ageofrobotics;
 
+import com.modpackswork.ageofrobotics.block.ModBlocks;
 import com.modpackswork.ageofrobotics.core.ModMetadata;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -27,5 +28,6 @@ public class AgeOfRobotics {
    */
   public AgeOfRobotics(IEventBus modEventBus, ModContainer modContainer) {
     LOGGER.info("{} loading ({})", ModMetadata.MOD_NAME, ModMetadata.MOD_ID);
+    ModBlocks.register(modEventBus);
   }
 }
