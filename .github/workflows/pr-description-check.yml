@@ -1,0 +1,61 @@
+name: PR description check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the repo's PR description sections
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          # Template comments are guidance, not content, so drop them before checking anything.
+          body=$(printf '%s' "$PR_BODY" | perl -0777 -pe 's/<!--.*?-->//gs')
+          failed=0
+
+          section_text() {
+            printf '%s\n' "$body" | awk -v want="$1" '
+              $0 == want { inside = 1; next }
+              /^## / { inside = 0 }
+              inside { print }
+            '
+          }
+
+          for heading in \
+            "## Why this ticket exists" \
+            "## Summary" \
+            "## Notable design choices" \
+            "## How this was tested"; do
+            if ! printf '%s\n' "$body" | grep -qxF "$heading"; then
+              echo "Missing section: $heading"
+              failed=1
+              continue
+            fi
+            if [ -z "$(section_text "$heading" | tr -d '[:space:]-')" ]; then
+              echo "Section is empty: $heading"
+              failed=1
+            fi
+          done
+
+          choices=$(section_text "## Notable design choices" | grep -c '^[-*] *[^ ]' || true)
+          if [ "$choices" -gt 5 ]; then
+            echo "List at most five design choices, found $choices."
+            failed=1
+          fi
+
+          if printf '%s' "$body" | grep -q "—"; then
+            echo "The description contains an em dash."
+            echo "Use a comma, a full stop or brackets instead."
+            failed=1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            echo
+            echo "See .github/pull_request_template.md for the sections this repo expects."
+            exit 1
+          fi
+
+          echo "PR description looks good."
